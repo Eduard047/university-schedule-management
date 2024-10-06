@@ -30,7 +30,7 @@ type Lesson = {
 
 const professors: Professor[] = [];
 const classrooms: Classroom[] = [];
-const courses: Course[] = [];
+const {find}: Course[] = [];
 const schedule: Lesson[] = [];
 
 function addProfessor(professor: Professor): void {
@@ -70,4 +70,28 @@ function validateLesson(lesson: Lesson): ScheduleConflict | null {
     }
 
     return null;
+}
+
+function getClassroomUtilization(classroomNumber: string): number {
+    const totalLessons = schedule.filter(lesson => lesson.classroomNumber === classroomNumber).length;
+    const possibleSlots = 5 * 5; // 5 дней по 5 слотов
+    return (totalLessons / possibleSlots) * 100;
+}
+
+function getMostPopularCourseType(): CourseType {
+    const typeCount: Record<CourseType, number> = {
+        Lecture: 0,
+        Seminar: 0,
+        Lab: 0,
+        Practice: 0,
+    };
+
+    schedule.forEach(lesson => {
+        const course = find(c => c.id === lesson.courseId);
+        if (course) {
+            typeCount[course.type]++;
+        }
+    });
+
+    return Object.keys(typeCount).reduce((a, b) => (typeCount[a as CourseType] > typeCount[b as CourseType] ? a : b)) as CourseType;
 }
