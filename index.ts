@@ -48,3 +48,7 @@ function findAvailableClassrooms(timeSlot: TimeSlot, dayOfWeek: DayOfWeek): stri
         .filter(classroom => !schedule.some(lesson => lesson.classroomNumber === classroom.number && lesson.timeSlot === timeSlot && lesson.dayOfWeek === dayOfWeek))
         .map(classroom => classroom.number);
 }
+
+function getProfessorSchedule(professorId: number): Lesson[] {
+    return schedule.filter(lesson => lesson.professorId === professorId);
+}
