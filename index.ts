@@ -1,97 +1,67 @@
-type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
-type TimeSlot = "8:30-10:00" | "10:15-11:45" | "12:15-13:45" | "14:00-15:30" | "15:45-17:15";
-type CourseType = "Lecture" | "Seminar" | "Lab" | "Practice";
-
-type Professor = {
+interface Professor {
     id: number;
     name: string;
     department: string;
-};
+}
 
-type Classroom = {
+interface Classroom {
     number: string;
     capacity: number;
     hasProjector: boolean;
-};
+}
 
-type Course = {
-    id: number;
-    name: string;
-    type: CourseType;
-};
-
-type Lesson = {
+interface Lesson {
     courseId: number;
     professorId: number;
     classroomNumber: string;
-    dayOfWeek: DayOfWeek;
-    timeSlot: TimeSlot;
-};
+    dayOfWeek: string;
+    timeSlot: string;
+}
+
+interface Course {
+    id: number;
+    name: string;
+}
 
 const professors: Professor[] = [];
 const classrooms: Classroom[] = [];
-const {find}: Course[] = [];
-const schedule: Lesson[] = [];
+const lessons: Lesson[] = [];
+const courses: Course[] = [];
 
-function addProfessor(professor: Professor): void {
+
+function addProfessor(professor: Professor) {
     professors.push(professor);
 }
 
-function addLesson(lesson: Lesson): boolean {
 
-    schedule.push(lesson);
-    return true;
+function addLesson(lesson: Lesson) {
+    lessons.push(lesson);
 }
 
-function findAvailableClassrooms(timeSlot: TimeSlot, dayOfWeek: DayOfWeek): string[] {
-    return classrooms
-        .filter(classroom => !schedule.some(lesson => lesson.classroomNumber === classroom.number && lesson.timeSlot === timeSlot && lesson.dayOfWeek === dayOfWeek))
-        .map(classroom => classroom.number);
+
+function addCourse(course: Course) {
+    courses.push(course);
 }
 
-function getProfessorSchedule(professorId: number): Lesson[] {
-    return schedule.filter(lesson => lesson.professorId === professorId);
+
+function findAvailableClassrooms(timeSlot: string, dayOfWeek: string): Classroom[] {
+    const occupiedClassrooms = lessons
+        .filter(lesson => lesson.timeSlot === timeSlot && lesson.dayOfWeek === dayOfWeek)
+        .map(lesson => lesson.classroomNumber);
+
+
+    return classrooms.filter(classroom => occupiedClassrooms.indexOf(classroom.number) === -1);
+
 }
 
-type ScheduleConflict = {
-    type: "ProfessorConflict" | "ClassroomConflict";
-    lessonDetails: Lesson;
-};
 
-function validateLesson(lesson: Lesson): ScheduleConflict | null {
-    const professorConflict = schedule.some(l => l.professorId === lesson.professorId && l.timeSlot === lesson.timeSlot && l.dayOfWeek === lesson.dayOfWeek);
-    if (professorConflict) {
-        return { type: "ProfessorConflict", lessonDetails: lesson };
-    }
-
-    const classroomConflict = schedule.some(l => l.classroomNumber === lesson.classroomNumber && l.timeSlot === lesson.timeSlot && l.dayOfWeek === lesson.dayOfWeek);
-    if (classroomConflict) {
-        return { type: "ClassroomConflict", lessonDetails: lesson };
-    }
-
-    return null;
+function getProfessorSchedule(professorId: number) {
+    return lessons.filter(lesson => lesson.professorId === professorId);
 }
 
-function getClassroomUtilization(classroomNumber: string): number {
-    const totalLessons = schedule.filter(lesson => lesson.classroomNumber === classroomNumber).length;
-    const possibleSlots = 5 * 5; // 5 дней по 5 слотов
-    return (totalLessons / possibleSlots) * 100;
-}
 
-function getMostPopularCourseType(): CourseType {
-    const typeCount: Record<CourseType, number> = {
-        Lecture: 0,
-        Seminar: 0,
-        Lab: 0,
-        Practice: 0,
-    };
+export { addProfessor, addLesson, addCourse, findAvailableClassrooms, getProfessorSchedule };
 
-    schedule.forEach(lesson => {
-        const course = find(c => c.id === lesson.courseId);
-        if (course) {
-            typeCount[course.type]++;
-        }
-    });
-
-    return Object.keys(typeCount).reduce((a, b) => (typeCount[a as CourseType] > typeCount[b as CourseType] ? a : b)) as CourseType;
-}
+console.log('Professors:', professors);
+console.log('Lessons:', lessons);
+console.log('Classrooms:', classrooms);
