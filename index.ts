@@ -42,3 +42,9 @@ function addLesson(lesson: Lesson): boolean {
     schedule.push(lesson);
     return true;
 }
+
+function findAvailableClassrooms(timeSlot: TimeSlot, dayOfWeek: DayOfWeek): string[] {
+    return classrooms
+        .filter(classroom => !schedule.some(lesson => lesson.classroomNumber === classroom.number && lesson.timeSlot === timeSlot && lesson.dayOfWeek === dayOfWeek))
+        .map(classroom => classroom.number);
+}
