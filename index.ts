@@ -27,3 +27,8 @@ type Lesson = {
     dayOfWeek: DayOfWeek;
     timeSlot: TimeSlot;
 };
+
+const professors: Professor[] = [];
+const classrooms: Classroom[] = [];
+const courses: Course[] = [];
+const schedule: Lesson[] = [];
