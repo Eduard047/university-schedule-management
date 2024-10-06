@@ -32,3 +32,13 @@ const professors: Professor[] = [];
 const classrooms: Classroom[] = [];
 const courses: Course[] = [];
 const schedule: Lesson[] = [];
+
+function addProfessor(professor: Professor): void {
+    professors.push(professor);
+}
+
+function addLesson(lesson: Lesson): boolean {
+
+    schedule.push(lesson);
+    return true;
+}
