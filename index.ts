@@ -52,3 +52,22 @@ function findAvailableClassrooms(timeSlot: TimeSlot, dayOfWeek: DayOfWeek): stri
 function getProfessorSchedule(professorId: number): Lesson[] {
     return schedule.filter(lesson => lesson.professorId === professorId);
 }
+
+type ScheduleConflict = {
+    type: "ProfessorConflict" | "ClassroomConflict";
+    lessonDetails: Lesson;
+};
+
+function validateLesson(lesson: Lesson): ScheduleConflict | null {
+    const professorConflict = schedule.some(l => l.professorId === lesson.professorId && l.timeSlot === lesson.timeSlot && l.dayOfWeek === lesson.dayOfWeek);
+    if (professorConflict) {
+        return { type: "ProfessorConflict", lessonDetails: lesson };
+    }
+
+    const classroomConflict = schedule.some(l => l.classroomNumber === lesson.classroomNumber && l.timeSlot === lesson.timeSlot && l.dayOfWeek === lesson.dayOfWeek);
+    if (classroomConflict) {
+        return { type: "ClassroomConflict", lessonDetails: lesson };
+    }
+
+    return null;
+}
